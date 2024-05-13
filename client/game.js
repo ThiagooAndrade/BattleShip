@@ -8,7 +8,7 @@ const turnDisplay = document.querySelector('#turn-display');
 
 const ws = new WebSocket('ws://localhost:8080');
 
-ws.onopen = (e) => {
+ws.onopen = () => {
     console.log("conectado!")
 }
 
@@ -32,19 +32,20 @@ $(flipButton).click(flip)
 const width = 10;
 
 function createBoard(color, user) {
-    const gameBoardContainer = document.createElement('div');
+    const gameBoardContainer = $('<div></div');
     $(gameBoardContainer).addClass('width-300')
     $(gameBoardContainer).addClass('height-300')
     $(gameBoardContainer).addClass('d-flex')
     $(gameBoardContainer).addClass('flex-wrap')
     $(gameBoardContainer).css("background-color", color);
-    gameBoardContainer.id = user;
+    $(gameBoardContainer).attr('id', user);
+
 
     for (let i = 0; i < width * width; i++) {
         const block = document.createElement('div');
         $(block).addClass("width-30");
         $(block).addClass("height-30");
-        block.id = i;
+        $(block).attr('id', i);
         $(gameBoardContainer).append(block);
     }
 
@@ -78,20 +79,20 @@ function getValidity(allBoardBlocks, isHorizontal, startIndex, ship) {
 
     for (let i = 0; i < ship.length; i++) {
         if (isHorizontal) {
-            shipBlocks.push(allBoardBlocks[Number(validStart) + i]);
+            shipBlocks.push($(allBoardBlocks[Number(validStart) + i]));
         } else {
-            shipBlocks.push(allBoardBlocks[Number(validStart) + i * width]);
+            shipBlocks.push($(allBoardBlocks[Number(validStart) + i * width]));
         }
     }
 
     let valid;
 
     if (isHorizontal) {
-        shipBlocks.every((_shipBlock, index) => valid = shipBlocks[0].id % width !== width - (shipBlocks.length - (index + 1)));
+        shipBlocks.every((_shipBlock, index) => valid = shipBlocks[0].prop('id') % width !== width - (shipBlocks.length - (index + 1)));
     } else {
-        shipBlocks.every((_shipBlock, index) => valid = shipBlocks[0].id < 90 + (width * index + 1));
+        shipBlocks.every((_shipBlock, index) => valid = shipBlocks[0].prop('id') < 90 + (width * index + 1));
     }
-    const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'));
+    const notTaken = shipBlocks.every(shipBlock => !shipBlock.hasClass('taken'));
 
     return { shipBlocks, valid, notTaken };
 }
@@ -327,7 +328,6 @@ function restartShipBlocks(allBoardBlocks, colorDefault) {
     }
 }
 
-let restartingGame = false;
 
 function restartGame() {
     const allBoardBlocksPlayer = document.querySelectorAll('#player div');
@@ -335,8 +335,6 @@ function restartGame() {
     const allBoardBlocksComputer = document.querySelectorAll('#computer div');
     restartShipBlocks(allBoardBlocksComputer, 'pink');
     ships.forEach(ship => addShipPiece('computer', ship, null));
-
-
 
     optionContainer.innerHTML = optionContainerDefault.join('');
 
@@ -351,7 +349,6 @@ function restartGame() {
     playerHits = [];
     computerHits = [];
     gameOver = false;
-    // restartingGame = true;
     playerTurn = true;
 }
 $(restartButton).click(restartGame);

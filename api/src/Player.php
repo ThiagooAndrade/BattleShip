@@ -6,9 +6,14 @@ use Exception;
 use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket\MessageComponentInterface;
 
+
+
+
 class Player implements MessageComponentInterface
 {
     protected $jogador;
+
+    private $players = [];
 
     public function __construct()
     {
@@ -20,6 +25,13 @@ class Player implements MessageComponentInterface
         $this->jogador->attach($conn);
 
         echo "Nova conexao: {$conn->resourceId}\n\n";
+        $this->players[] = $conn->resourceId;
+
+        // Convertendo o array $players em uma string
+        $playersString = implode(", ", $this->players);
+
+        // Imprimindo as conexões
+        echo "Connections: $playersString\n\n";
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -38,6 +50,19 @@ class Player implements MessageComponentInterface
         $this->jogador->detach($conn);
 
         echo "Jogador {$conn->resourceId} desconectou\n\n";
+
+        // Encontrar o índice do jogador no array $players
+        $index = array_search($conn->resourceId, $this->players);
+
+        // Se o jogador for encontrado no array, removê-lo
+        if ($index !== false) {
+            unset($this->players[$index]);
+        }
+        // Convertendo o array $players em uma string
+        $playersString = implode(", ", $this->players);
+
+        // Imprimindo as conexões
+        echo "Connections: $playersString\n\n";
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)

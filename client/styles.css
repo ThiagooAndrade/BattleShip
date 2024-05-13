@@ -1,9 +1,5 @@
 @import url("./boostrap/css/bootstrap.css");
 
-.width-500 {
-    width: 500px;
-}
-
 .width-300 {
     width: 300px;
 }
@@ -34,6 +30,10 @@
 
 .height-200 {
     height: 200px;
+}
+
+.height-40 {
+    height: 40px;
 }
 
 .height-50 {
